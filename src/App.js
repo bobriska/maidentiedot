@@ -1,25 +1,76 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+const FilterForm = ({filter, setFilter, countries, setCountries}) => {
+  const handleFilterChange = (event) => setFilter(event.target.value)
+  return(
+    <form >
+      <p>find countries: <input value={filter} onChange={handleFilterChange}/></p>
+    </form>
+  )
+}
+
+const Countries = ({filter, allCountries}) => {
+  const selectedCountries = allCountries
+    .filter(value => value.name.common.toLowerCase().includes(filter.toLowerCase()))
+    
+  if (selectedCountries.length === 1) { 
+    return (
+      <ShowCountry selectedCountry={selectedCountries}/>
+    )
+  } else {
+    return (
+      <ShowCountries selectedCountries={selectedCountries}/>
+    )
+  }
+  
+}
+
+const ShowCountries = ({selectedCountries}) => {
+  if (selectedCountries.length < 9) {
+    return (
+      <div>{selectedCountries.map(value => <p key={value.name.common}>{value.name.common} </p>)}</div>
+    )
+  } else {
+    return (
+      <div> Too many matches, specify another filter </div>
+    )
+  }
+}
+
+const ShowCountry = ({selectedCountry}) => {
+return (
+  <div>{selectedCountry
+  .map(value => 
+    <div key={value.name.common}>
+      <h2>{value.name.common} </h2>
+      <p>capital {value.capital}</p> 
+      <p>area {value.area}</p>
+      <h3>languages: </h3>
+      <ul>{Object.values(value.languages).map(entry => <li key={entry}>{entry}</li>)}</ul>
+      <img src={value.flags.png} alt='countries flag'></img>
     </div>
-  );
+  )}</div>)
+  }
+
+const App = () => {
+  const [filter, setFilter] = useState('')
+  const [allCountries, setAllCountries] = useState([])
+
+  useEffect(() => {
+      axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+          setAllCountries(response.data)
+      })
+  }, [])
+
+  return (
+    < >
+      <FilterForm filter={filter} setFilter={setFilter}/>
+      <Countries filter={filter} allCountries={allCountries}/>
+    </>
+  )
 }
 
 export default App;
