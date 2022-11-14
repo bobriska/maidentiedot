@@ -11,25 +11,25 @@ const FilterForm = ({filter, setFilter, countries, setCountries}) => {
 }
 
 const Countries = ({filter, allCountries}) => {
-  const selectedCountries = allCountries
+  const filteredCountries = allCountries
     .filter(value => value.name.common.toLowerCase().includes(filter.toLowerCase()))
     
-  if (selectedCountries.length === 1) { 
+  if (filteredCountries.length === 1) { 
     return (
-      <ShowCountry selectedCountry={selectedCountries}/>
+      <ShowCountry selectedCountry={filteredCountries}/>
     )
   } else {
     return (
-      <ShowCountries selectedCountries={selectedCountries}/>
+      <ShowCountries filteredCountries={filteredCountries}/>
     )
   }
   
 }
 
-const ShowCountries = ({selectedCountries}) => {
-  if (selectedCountries.length < 9) {
+const ShowCountries = ({filteredCountries}) => {
+  if (filteredCountries.length < 9) {
     return (
-      <div>{selectedCountries.map(value => <p key={value.name.common}>{value.name.common} </p>)}</div>
+      <div>{filteredCountries.map(value => <p key={value.name.common}>{value.name.common} </p>)}</div>
     )
   } else {
     return (
